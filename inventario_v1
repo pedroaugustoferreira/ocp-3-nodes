@@ -1,0 +1,191 @@
+# ansible-playbook -i inventario_v1 /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml;
+
+[nodes]
+ocp01.example.com openshift_schedulable=true openshift_node_group_name='node-config-all-in-one'
+ocp02.example.com openshift_schedulable=true openshift_node_group_name='node-config-all-in-one'
+ocp03.example.com openshift_schedulable=true openshift_node_group_name='node-config-all-in-one'
+
+[masters]
+ocp01.example.com
+ocp02.example.com
+ocp03.example.com
+
+[etcd]
+[etcd:children]
+masters
+
+[lb]
+
+[nfs]
+
+[OSEv3:children]
+masters
+etcd
+nodes
+lb
+nfs
+
+[OSEv3:vars]
+ansible_ssh_user=root
+openshift_deployment_type=openshift-enterprise
+openshift_disable_check=openshift_check_min_host_memory_gb
+openshift_disable_check=memory_availability
+
+# Storage persistente - VMWARE
+openshift_cloudprovider_kind=vsphere
+openshift_cloudprovider_vsphere_username=administrator@vsphere.local 
+openshift_cloudprovider_vsphere_password=W@ster123
+openshift_cloudprovider_vsphere_host=192.168.100.102
+openshift_cloudprovider_vsphere_datacenter=SVC-DC
+openshift_cloudprovider_vsphere_datastore=LAB_Local_Raid5
+
+
+openshift_node_groups=[{'name': 'node-config-all-in-one', 'labels': ['node-role.kubernetes.io/master=true', 'node-role.kubernetes.io/infra=true', 'node-role.kubernetes.io/compute=true']}, {'name': 'node-config-infra-compute', 'labels': ['node-role.kubernetes.io/infra=true', 'node-role.kubernetes.io/compute=true']}]
+#osm_default_node_selector='node-role.kubernetes.io/compute=true'
+
+oreg_url=registry.redhat.io/openshift3/ose-${component}:${version}
+oreg_auth_user='6583642|ocp'
+oreg_auth_password='eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiIyN2U1NWI5YmM4N2Y0ZjY0OWU5Njg2YWM1NDY4MzNkNSJ9.fE9JRkstam1knBJuhNlQE5cjBUY3n7qGE4REPVat2FdCY3iQMSOFwTV0J99QTL3up4P987ojVVEwxvb8oHm6N2P6xWvdT3Ms9YAi0ChG4QmHY7-Bt1gLRanYc7kxsVhi3X-ItrceNA-r7UjGaB02qACYN8s07IhQmhiBwyPTY786B-WPMqd5bZkZxMQYeexGZ2vSwetC2MJPcA2GdlBjyxKJBHkQ1Cf9yTCuOEnn59Dzo7stYnnvbmKCQaqPklDpcMzuyfIHty4XxTilQGd3dyKY0UDy8rUsV2bBgs7Vadv410OzqnBCeVUt6DIPTmR--e7ElWL2wOkrmNRMAe6Og_OVP1lyn11JwCVHPVrSTI9sEtvF0l1yJ8aePxBheDx8_PmwCch0O0DkZA-YdyI64G3lChpSyc9cIwyoDvQyhkql-6pdY0fy4wHkkS4DuhaJVUf9SvWjh35fjsYmIi1KWNlKHaJdQIVHjj0FvUdrDalXyXDp9Ci7DLGQ1RpYWj2Ak5Ws7sXoo3C2r4xYPEhm5JVSNQTdiOIQoIRoo7ytuI1ncaHVlIJ-WxaKhJhMlVsqkGyQjUqL8Z-yBgDriXxrsbTWPAIrrMcmKU2QjNB_o1ILF4ULteqaUfPgNwQSSFrFEDrSHsoooX5IryrK1lfMQq1DjQgQrh7OXotU7Ct-Hro'
+oreg_test_login=false
+
+#openshift_examples_modify_imagestreams=true
+#openshift_docker_insecure_registries=registry.ocp.example.com
+#openshift_docker_blocked_registries=registry.hacker.com
+
+#openshift_deployment_type=origin
+openshift_deployment_type=openshift-enterprise
+
+#openshift_disable_check=
+### Options: 
+###   memory_availability -> openshift_check_min_host_memory_gb
+###   disk_availability -> openshift_check_min_host_disk_gb
+###   docker_storage
+###   docker_storage_driver
+###   docker_image_availability
+###   package_version
+###   package_availability
+###   package_update
+
+# minhas aplicaçãoes exemplo: teste-http.subdomain.ocp.example.com
+openshift_master_default_subdomain=apps.ocp.example.com
+
+openshift_master_cluster_hostname=internal.ocp.example.com
+
+# cluster console, aplication console, service catalog
+openshift_master_cluster_public_hostname=cl.ocp.example.com
+
+openshift_master_cluster_method=native
+
+openshift_master_min_tls_version=VersionTLS12
+openshift_node_min_tls_version=VersionTLS12
+#openshift_master_ca_certificate={'certfile': 'cert.crt', 'keyfile': 'cert.key'}
+#openshift_additional_ca='ca.crt'
+#openshift_master_named_certificates=[{"certfile": "/path/to/custom1.crt", "keyfile": "/path/to/custom1.key", "names": ["public-master-host.com"], "cafile": "/path/to/custom-ca1.crt"}]
+#openshift_master_overwrite_named_certificates=true
+openshift_hosted_registry_cert_expire_days=3650
+openshift_ca_cert_expire_days=3650
+openshift_node_cert_expire_days=3650
+openshift_master_cert_expire_days=3650
+etcd_ca_default_days=3650
+
+openshift_install_examples=true
+#openshift_examples_load_centos=true
+openshift_examples_load_db_templates=true
+openshift_examples_load_quickstarts=true
+openshift_examples_load_xpaas=true
+
+etcd_debug=true
+debug_level=4
+
+# Autenticacao
+openshift_master_identity_providers=[{'name': 'Local_Auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+openshift_master_htpasswd_users={'pedro': '$apr1$QD/hlKZ9$LlvF0L6/EDo/gpKNU/QW50'} #master
+#openshift_master_htpasswd_file=
+
+osm_use_cockpit=true
+osm_cockpit_plugins=['cockpit-kubernetes']
+
+openshift_hosted_manage_router=true
+openshift_hosted_manage_registry=true
+openshift_hosted_manage_registry_console=true
+
+openshift_hosted_router_selector='node-role.kubernetes.io/infra=true'
+openshift_hosted_router_replicas=2
+openshift_hosted_router_extended_validation=true
+
+
+os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+#osm_cluster_network_cidr=10.128.0.0/16
+#openshift_portal_net=172.30.0.0/16
+#osm_host_subnet_length=10
+#openshift_master_ingress_ip_network_cidr=
+os_firewall_use_firewalld=true
+#openshift_node_port_range=30000-32767
+
+#openshift_master_api_port=443
+#openshift_master_console_port=443
+
+#openshift_http_proxy=
+#openshift_https_proxy
+#openshift_no_proxy=
+#openshift_generate_no_proxy_hosts=true
+#openshift_builddefaults_http_proxy=
+#openshift_builddefaults_https_proxy=
+#openshift_builddefaults_no_proxy=
+#openshift_builddefaults_git_http_proxy=
+#openshift_builddefaults_git_https_proxy=
+#openshift_builddefaults_git_no_proxy=
+
+openshift_builddefaults_nodeselectors={'node-role.kubernetes.io/infra':'true'}
+#openshift_builddefaults_image_labels=[{'name':'imagelabelname1','value':'imagelabelvalue1'}]
+#openshift_builddefaults_annotations={'annotationkey1':'annotationvalue1'}
+#openshift_builddefaults_resources_requests_cpu=100m
+#openshift_builddefaults_resources_requests_memory=256Mi
+#openshift_builddefaults_resources_limits_cpu=1000m
+#openshift_builddefaults_resources_limits_memory=512Mi
+
+openshift_enable_service_catalog=true
+template_service_broker_install=true
+template_service_broker_selector={"node-role.kubernetes.io/infra":"true"}
+ansible_service_broker_install=true
+ansible_service_broker_node_selector={"node-role.kubernetes.io/infra":"true"}
+
+openshift_console_install=true
+#openshift_console_hostname=
+#openshift_console_cert=
+#openshift_console_key=
+#openshift_console_ca=
+
+##openshift_cluster_monitoring_operator_install=false
+openshift_autoheal_deploy=false
+##openshift_metrics_install_metrics=false
+##openshift_logging_install_logging=false
+##openshift_metrics_server_install=false
+openshift_enable_olm=true
+openshift_descheduler_install=false
+
+# Registry
+#openshift_hosted_registry_selector='node-role.kubernetes.io/infra=true'
+openshift_hosted_registry_replicas=1
+openshift_hosted_manage_registry=true
+openshift_hosted_manage_registry_console=true
+#openshift_hosted_registry_clusterip=172.30.10.10
+openshift_hosted_registry_routehost=registry.ocp.example.com
+openshift_hosted_registry_storage_kind=vsphere
+openshift_hosted_registry_storage_access_modes=['ReadWriteOnce']
+openshift_hosted_registry_storage_annotations=['volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/vsphere-volume']
+openshift_hosted_registry_storage_volume_size=50Gi
+openshift_hosted_registry_cert_expire_days=3650
+
+
+# MONITORING
+openshift_cluster_monitoring_operator_install=true
+openshift_cluster_monitoring_operator_prometheus_storage_capacity=20Gi
+openshift_cluster_monitoring_operator_alertmanager_storage_capacity=2Gi
+#openshift_cluster_monitoring_operator_node_selector={"node-role.kubernetes.io/infra": "true"}
+#openshift_cluster_monitoring_operator_alertmanager_config= |+
+openshift_cluster_monitoring_operator_prometheus_storage_enabled=true
+openshift_cluster_monitoring_operator_alertmanager_storage_enabled=true
+openshift_cluster_monitoring_operator_prometheus_storage_class_name=vsphere-standard
+openshift_cluster_monitoring_operator_alertmanager_storage_class_name=vsphere-standard
+openshift_monitor_availability_install=true
